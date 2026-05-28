@@ -124,6 +124,15 @@ class PostController extends Controller
         if (auth()->id() != $post->user_id) {
             abort(403);
         }
+        
+        // Gönderinin görseli varsa diskten sil
+        if ($post->image_path) {
+            $imagePath = public_path('posts/' . $post->image_path);
+            if (file_exists($imagePath)) {
+                @unlink($imagePath);
+            }
+        }
+
         $post->delete();
         return back()->with('success', 'Gönderi silindi.');
     }
