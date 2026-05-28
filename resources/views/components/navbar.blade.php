@@ -6,13 +6,15 @@
                 <div style="line-height: 1; display: flex; align-items: center;">Cine<span>Scope</span></div>
             </a>
             
+            @if(!request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('password.*') && !request()->routeIs('admin.login'))
             <nav class="nav-menu">
                 <a href="{{ route('movies.index') }}" class="nav-link {{ request()->routeIs('movies.*') && !request()->routeIs('movies.search') ? 'active' : '' }}">Filmler</a>
                 <a href="{{ route('tv.index') }}" class="nav-link {{ request()->routeIs('tv.*') ? 'active' : '' }}">Diziler</a>
             </nav>
+            @endif
         </div>
         
-        @if(!request()->routeIs('forum.*') && !request()->routeIs('notifications.*'))
+        @if(!request()->routeIs('forum.*') && !request()->routeIs('notifications.*') && !request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('password.*') && !request()->routeIs('admin.login'))
         <form action="{{ route('movies.search') }}" method="GET" class="search-form" style="position: relative;" id="smart-search-form">
             <input type="text" name="query" id="smart-search-input" placeholder="Film veya dizi ara..." class="search-input" value="{{ request('query') }}" autocomplete="off" required>
             <button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
