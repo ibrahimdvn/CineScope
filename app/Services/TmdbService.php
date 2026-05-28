@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Services;
+
+use Illuminate\Support\Facades\Http;
+
+class TmdbService
+{
+    protected $baseUrl;
+    protected $apiKey;
+
+    public function __construct()
+    {
+        $this->baseUrl = 'https://api.themoviedb.org/3';
+        $this->apiKey = env('TMDB_API_KEY');
+    }
+
+    public function getPopularMovies($page = 1)
+    {
+        return $this->get('/movie/popular', ['page' => $page]);
+    }
+
+    public function getNowPlayingMovies($page = 1)
+    {
+        return $this->get('/movie/now_playing', ['page' => $page]);
+    }
+
+    public function searchMovies($query, $page = 1)
+    {
+        return $this->get('/search/movie', ['query' => $query, 'page' => $page]);
+    }
+
+    public function getMovieDetails($id)
+    {
+        return $this->get("/movie/{$id}", ['append_to_response' => 'similar']);
+    }
+
+    protected function get($endpoint, $params = [])
+    {
+        $params['api_key'] = $this->apiKey;
+        $params['language'] = 'tr-TR';
+
+        $response = Http::get("{$this->baseUrl}{$endpoint}", $params);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+}
