@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             timeoutId = setTimeout(() => {
-                fetch(`{{ route('movies.ajaxSearch') }}?query=${encodeURIComponent(query)}`)
+                fetch(`{{ route('movies.ajaxSearch') }}?query=${encodeURIComponent(query)}&_t=${Date.now()}`)
                     .then(res => res.json())
                     .then(data => {
                         searchResults.innerHTML = '';

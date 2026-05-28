@@ -45,29 +45,30 @@ class MovieController extends Controller
             return redirect()->route('movies.index');
         }
 
-        $data = $this->tmdbService->searchMulti($query, $page);
-        $results = $data['results'] ?? [];
+        // Sorgunun şahıs ismi olup olmadığını anlamak için TMDB Çoklu Arama yapıyoruz
+        $multiData = $this->tmdbService->searchMulti($query, $page);
+        $multiResults = $multiData['results'] ?? [];
 
-        // Eğer TMDB sonuçlarında en az bir adet "person" (kişi) varsa, aramayı bir kişi araması kabul et
+        // Eğer en alakalı (ilk) sonuç bir "person" (kişi) ise, aramayı bir kişi araması kabul et
         $isQueryPerson = false;
-        foreach ($results as $item) {
-            if (isset($item['media_type']) && $item['media_type'] === 'person') {
+        if (!empty($multiResults)) {
+            $firstItem = $multiResults[0];
+            if (isset($firstItem['media_type']) && $firstItem['media_type'] === 'person') {
                 $isQueryPerson = true;
-                break;
             }
         }
 
         if ($isQueryPerson) {
-            // Kişi araması ise TMDB'den film/dizi çekme (boşalt)
+            // Kişi araması ise TMDB'den hiçbir film veya dizi çekmiyoruz (boş bırakıyoruz)
             $movies = [];
             $totalPages = 1;
         } else {
-            // Sadece afişi olan film ve dizileri filtrele
-            $movies = array_filter($results, function($item) {
+            // Kişi araması değilse, sadece afişi olan film ve dizileri gösteriyoruz
+            $movies = array_filter($multiResults, function($item) {
                 $mediaType = $item['media_type'] ?? 'movie';
                 return $mediaType !== 'person' && !empty($item['poster_path']);
             });
-            $totalPages = $data['total_pages'] ?? 1;
+            $totalPages = $multiData['total_pages'] ?? 1;
         }
 
         // Sitedeki kayıtlı üyeleri ara (Sadece 1. sayfada göster)
@@ -79,7 +80,7 @@ class MovieController extends Controller
                 ->get();
         }
 
-        return view('movies.search', compact('movies', 'users', 'query', 'page', 'totalPages'));
+        return view('movies.search', compact('movies', 'users', 'query', 'page', 'totalPages', 'isQueryPerson'));
     }
 
     public function ajaxSearch(Request $request)
@@ -89,23 +90,23 @@ class MovieController extends Controller
             return response()->json([]);
         }
 
-        // 1. TMDB'den Film ve Dizileri ara
-        $data = $this->tmdbService->searchMulti($query, 1);
-        $results = $data['results'] ?? [];
+        // Sorgunun şahıs ismi olup olmadığını anlamak için TMDB Çoklu Arama yapıyoruz
+        $multiData = $this->tmdbService->searchMulti($query, 1);
+        $multiResults = $multiData['results'] ?? [];
 
-        // Eğer TMDB sonuçlarında en az bir adet "person" varsa, aramayı kişi araması kabul et
+        // Eğer en alakalı (ilk) sonuç bir "person" ise, aramayı kişi araması kabul et
         $isQueryPerson = false;
-        foreach ($results as $item) {
-            if (isset($item['media_type']) && $item['media_type'] === 'person') {
+        if (!empty($multiResults)) {
+            $firstItem = $multiResults[0];
+            if (isset($firstItem['media_type']) && $firstItem['media_type'] === 'person') {
                 $isQueryPerson = true;
-                break;
             }
         }
 
         $formattedTmdb = [];
         if (!$isQueryPerson) {
-            // Kişi araması değilse, TMDB'den film ve dizileri filtrele
-            $filteredTmdb = array_filter($results, function($item) {
+            // Şahıs ismi değilse, TMDB'den film ve dizileri filtrele
+            $filteredTmdb = array_filter($multiResults, function($item) {
                 $mediaType = $item['media_type'] ?? 'movie';
                 return $mediaType !== 'person';
             });
@@ -149,7 +150,7 @@ class MovieController extends Controller
         // 3. Sonuçları birleştir
         $combined = array_merge($formattedTmdb, $formattedUsers);
 
-        return response()->json($combined);
+        return response()->json(array_values($combined));
     }
 
     public function show($id)

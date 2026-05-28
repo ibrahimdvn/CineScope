@@ -32,11 +32,10 @@
     @endif
 
     {{-- Filmler ve Diziler Bölümü --}}
-    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
-        <i class="fas fa-film" style="color: var(--accent-color);"></i> Filmler ve Diziler
-    </h3>
-
     @if(count($movies) > 0)
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
+            <i class="fas fa-film" style="color: var(--accent-color);"></i> Filmler ve Diziler
+        </h3>
         <div class="movie-grid">
             @foreach($movies as $movie)
                 @include('components.movie-card', ['movie' => $movie])
@@ -56,7 +55,10 @@
                 @endif
             </div>
         @endif
-    @else
+    @elseif(!isset($isQueryPerson) || !$isQueryPerson)
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
+            <i class="fas fa-film" style="color: var(--accent-color);"></i> Filmler ve Diziler
+        </h3>
         <div style="text-align: center; padding: 4rem 0;">
             <i class="fas fa-film fa-3x" style="color: #64748b; margin-bottom: 1rem;"></i>
             <h3>Film veya dizi bulunamadı</h3>

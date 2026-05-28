@@ -40,6 +40,11 @@ class TmdbService
         return $this->get('/search/movie', ['query' => $query, 'page' => $page]);
     }
 
+    public function searchTv($query, $page = 1)
+    {
+        return $this->get('/search/tv', ['query' => $query, 'page' => $page]);
+    }
+
     public function getMovieDetails($id)
     {
         return $this->get("/movie/{$id}", ['append_to_response' => 'similar']);
