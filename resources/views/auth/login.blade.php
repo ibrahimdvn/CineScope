@@ -53,6 +53,12 @@
             <div style="margin-top: 1rem; text-align: center; font-size: 0.875rem;">
                 Hesabınız yok mu? <a href="{{ route('register') }}">Kayıt Ol</a>
             </div>
+            
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.875rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <a href="{{ route('movies.index') }}" style="color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                    <i class="fas fa-arrow-left"></i> Anasayfaya Dön
+                </a>
+            </div>
         </form>
     </div>
 </div>
