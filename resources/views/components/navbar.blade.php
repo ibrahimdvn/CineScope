@@ -12,6 +12,7 @@
             </nav>
         </div>
         
+        @if(!request()->routeIs('forum.*') && !request()->routeIs('notifications.*'))
         <form action="{{ route('movies.search') }}" method="GET" class="search-form" style="position: relative;" id="smart-search-form">
             <input type="text" name="query" id="smart-search-input" placeholder="Film veya dizi ara..." class="search-input" value="{{ request('query') }}" autocomplete="off" required>
             <button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
@@ -20,6 +21,7 @@
                 <!-- Results will be injected here via JS -->
             </div>
         </form>
+        @endif
 
         <nav class="nav-links">
             <button id="theme-toggle" class="btn btn-outline" style="border:none; padding: 0.5rem;"><i class="fas fa-sun"></i></button>
@@ -57,76 +59,78 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchResults = document.getElementById('smart-search-results');
     let timeoutId;
 
-    searchInput.addEventListener('input', function() {
-        const query = this.value.trim();
-        
-        clearTimeout(timeoutId);
-        
-        if (query.length < 2) {
-            searchResults.style.display = 'none';
-            return;
-        }
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            clearTimeout(timeoutId);
+            
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
 
-        timeoutId = setTimeout(() => {
-            fetch(`{{ route('movies.ajaxSearch') }}?query=${encodeURIComponent(query)}`)
-                .then(res => res.json())
-                .then(data => {
-                    searchResults.innerHTML = '';
-                    
-                    if (data.length === 0) {
-                        searchResults.innerHTML = '<div style="padding: 1rem; color: var(--text-muted); text-align: center; font-size: 0.9rem;">Sonuç bulunamadı.</div>';
-                    } else {
-                        data.forEach(item => {
-                            const link = document.createElement('a');
-                            link.href = item.url;
-                            link.style.cssText = 'display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; text-decoration: none; border-bottom: 1px solid var(--border-color); color: var(--text-primary); transition: background-color 0.2s;';
-                            link.onmouseover = () => link.style.backgroundColor = 'var(--bg-surface-hover)';
-                            link.onmouseout = () => link.style.backgroundColor = 'transparent';
-                            
-                            const posterHtml = item.poster 
-                                ? `<img src="${item.poster}" alt="" style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px;">` 
-                                : `<div style="width: 40px; height: 60px; background: var(--bg-base); border-radius: 4px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image" style="color: var(--text-muted);"></i></div>`;
-                            
-                            link.innerHTML = `
-                                ${posterHtml}
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem;">${item.title}</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                                        <span>${item.date}</span>
-                                        <span style="background: rgba(255,255,255,0.1); padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.7rem;">${item.type}</span>
-                                    </div>
-                                </div>
-                            `;
-                            searchResults.appendChild(link);
-                        });
+            timeoutId = setTimeout(() => {
+                fetch(`{{ route('movies.ajaxSearch') }}?query=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
                         
-                        const allResultsBtn = document.createElement('a');
-                        allResultsBtn.href = `{{ route('movies.search') }}?query=${encodeURIComponent(query)}`;
-                        allResultsBtn.style.cssText = 'display: block; padding: 0.75rem; text-align: center; color: var(--accent-color); font-weight: 500; font-size: 0.85rem; text-decoration: none;';
-                        allResultsBtn.innerHTML = 'Tüm Sonuçları Gör <i class="fas fa-arrow-right" style="margin-left: 0.25rem;"></i>';
-                        allResultsBtn.onmouseover = () => allResultsBtn.style.backgroundColor = 'var(--bg-surface-hover)';
-                        allResultsBtn.onmouseout = () => allResultsBtn.style.backgroundColor = 'transparent';
-                        searchResults.appendChild(allResultsBtn);
-                    }
-                    
-                    searchResults.style.display = 'flex';
-                })
-                .catch(err => console.error('Search error:', err));
-        }, 300);
-    });
+                        if (data.length === 0) {
+                            searchResults.innerHTML = '<div style="padding: 1rem; color: var(--text-muted); text-align: center; font-size: 0.9rem;">Sonuç bulunamadı.</div>';
+                        } else {
+                            data.forEach(item => {
+                                const link = document.createElement('a');
+                                link.href = item.url;
+                                link.style.cssText = 'display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; text-decoration: none; border-bottom: 1px solid var(--border-color); color: var(--text-primary); transition: background-color 0.2s;';
+                                link.onmouseover = () => link.style.backgroundColor = 'var(--bg-surface-hover)';
+                                link.onmouseout = () => link.style.backgroundColor = 'transparent';
+                                
+                                const posterHtml = item.poster 
+                                    ? `<img src="${item.poster}" alt="" style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px;">` 
+                                    : `<div style="width: 40px; height: 60px; background: var(--bg-base); border-radius: 4px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image" style="color: var(--text-muted);"></i></div>`;
+                                
+                                link.innerHTML = `
+                                    ${posterHtml}
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem;">${item.title}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                                            <span>${item.date}</span>
+                                            <span style="background: rgba(255,255,255,0.1); padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.7rem;">${item.type}</span>
+                                        </div>
+                                    </div>
+                                `;
+                                searchResults.appendChild(link);
+                            });
+                            
+                            const allResultsBtn = document.createElement('a');
+                            allResultsBtn.href = `{{ route('movies.search') }}?query=${encodeURIComponent(query)}`;
+                            allResultsBtn.style.cssText = 'display: block; padding: 0.75rem; text-align: center; color: var(--accent-color); font-weight: 500; font-size: 0.85rem; text-decoration: none;';
+                            allResultsBtn.innerHTML = 'Tüm Sonuçları Gör <i class="fas fa-arrow-right" style="margin-left: 0.25rem;"></i>';
+                            allResultsBtn.onmouseover = () => allResultsBtn.style.backgroundColor = 'var(--bg-surface-hover)';
+                            allResultsBtn.onmouseout = () => allResultsBtn.style.backgroundColor = 'transparent';
+                            searchResults.appendChild(allResultsBtn);
+                        }
+                        
+                        searchResults.style.display = 'flex';
+                    })
+                    .catch(err => console.error('Search error:', err));
+            }, 300);
+        });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!document.getElementById('smart-search-form').contains(e.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
-    
-    // Show dropdown again when input is focused if there's a query
-    searchInput.addEventListener('focus', function() {
-        if (this.value.trim().length >= 2 && searchResults.innerHTML !== '') {
-            searchResults.style.display = 'flex';
-        }
-    });
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (document.getElementById('smart-search-form') && !document.getElementById('smart-search-form').contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+        
+        // Show dropdown again when input is focused if there's a query
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim().length >= 2 && searchResults.innerHTML !== '') {
+                searchResults.style.display = 'flex';
+            }
+        });
+    }
 });
 </script>
