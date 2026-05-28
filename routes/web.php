@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\MovieController;
 
+Route::post('/register/send-code', [App\Http\Controllers\Auth\RegisterController::class, 'sendVerificationCode'])->name('register.sendCode');
 Auth::routes();
 
 Route::get('/', [MovieController::class, 'index'])->name('movies.index');

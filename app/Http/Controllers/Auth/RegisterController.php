@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -66,10 +67,14 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $email = $data['email'] ?? '';
+        $isGmail = str_ends_with(strtolower($email), '@gmail.com');
+
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'verification_code' => $isGmail ? ['required', 'string', 'size:6'] : ['nullable'],
         ], [
             'email.email' => 'Lütfen geçerli ve aktif bir e-posta adresi girin.',
             'email.unique' => 'Bu e-posta adresi zaten kullanımda.',
@@ -78,7 +83,24 @@ class RegisterController extends Controller
             'password.required' => 'Şifre alanı zorunludur.',
             'password.min' => 'Şifre en az 8 karakter olmalıdır.',
             'password.confirmed' => 'Şifre tekrarları eşleşmiyor.',
-        ]);
+            'verification_code.required' => 'E-posta doğrulama kodu zorunludur.',
+            'verification_code.size' => 'Doğrulama kodu 6 haneli olmalıdır.',
+        ])->after(function ($validator) use ($isGmail, $data, $email) {
+            if ($isGmail) {
+                $sessionEmail = session('register_email');
+                $sessionCode = session('register_code');
+                $expiresAt = session('register_code_expires_at');
+                $enteredCode = $data['verification_code'] ?? '';
+
+                if (!$sessionCode || !$sessionEmail || $sessionEmail !== $email) {
+                    $validator->errors()->add('verification_code', 'Lütfen önce doğrulama kodu isteyin.');
+                } elseif (now()->greaterThan($expiresAt)) {
+                    $validator->errors()->add('verification_code', 'Doğrulama kodunun süresi dolmuş. Lütfen yeni bir kod isteyin.');
+                } elseif ((string)$sessionCode !== (string)$enteredCode) {
+                    $validator->errors()->add('verification_code', 'Girdiğiniz doğrulama kodu geçersiz.');
+                }
+            }
+        });
     }
 
     /**
@@ -93,5 +115,53 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    /**
+     * E-posta doğrulama kodu gönderir.
+     */
+    public function sendVerificationCode(\Illuminate\Http\Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
+        ], [
+            'email.email' => 'Lütfen geçerli ve aktif bir e-posta adresi girin.',
+            'email.unique' => 'Bu e-posta adresi zaten kullanımda.',
+            'email.required' => 'E-posta alanı zorunludur.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first('email')
+            ], 422);
+        }
+
+        $email = $request->input('email');
+        $code = rand(100000, 999999);
+
+        session([
+            'register_email' => $email,
+            'register_code' => $code,
+            'register_code_expires_at' => now()->addMinutes(10)
+        ]);
+
+        try {
+            Mail::raw("CineScope kayıt işleminizi tamamlamak için doğrulama kodunuz: {$code}\n\nBu kod 10 dakika boyunca geçerlidir.", function ($message) use ($email) {
+                $message->to($email)
+                    ->subject("CineScope E-posta Doğrulama Kodu");
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Doğrulama kodu e-posta adresinize gönderildi.'
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Mail sending failed: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Doğrulama kodu gönderilemedi. Lütfen daha sonra tekrar deneyin.'
+            ], 500);
+        }
     }
 }
