@@ -48,15 +48,20 @@ class MovieController extends Controller
         $data = $this->tmdbService->searchMulti($query, $page);
         $movies = $data['results'] ?? [];
         
-        // Sadece afişi olan ve kişi olmayan sonuçları filtrele
-        $movies = array_filter($movies, function($movie) {
-            return !empty($movie['poster_path']) && isset($movie['media_type']) && $movie['media_type'] !== 'person';
+        // Sadece afişi/profil resmi olan film, dizi ve kişileri filtrele
+        $movies = array_filter($movies, function($item) {
+            $mediaType = $item['media_type'] ?? 'movie';
+            if ($mediaType === 'person') {
+                return !empty($item['profile_path']);
+            }
+            return !empty($item['poster_path']);
         });
 
         $totalPages = $data['total_pages'] ?? 1;
 
         return view('movies.search', compact('movies', 'query', 'page', 'totalPages'));
     }
+
     public function ajaxSearch(Request $request)
     {
         $query = $request->get('query');
@@ -64,26 +69,34 @@ class MovieController extends Controller
             return response()->json([]);
         }
 
-        $data = $this->tmdbService->searchMovies($query, 1);
+        $data = $this->tmdbService->searchMulti($query, 1);
         $results = $data['results'] ?? [];
         
-        // Sadece film ve dizileri filtrele (kişileri çıkar)
-        $filtered = array_filter($results, function($item) {
-            return in_array($item['media_type'] ?? 'movie', ['movie', 'tv']);
-        });
-
-        // En fazla 5 sonuç döndür
-        $limited = array_slice($filtered, 0, 5);
+        // En fazla 6 sonuç döndür
+        $limited = array_slice($results, 0, 6);
 
         // Formatla
         $formatted = array_map(function($item) {
-            $isTv = isset($item['media_type']) && $item['media_type'] === 'tv';
+            $mediaType = $item['media_type'] ?? 'movie';
             $id = $item['id'];
+            
+            if ($mediaType === 'person') {
+                return [
+                    'id' => $id,
+                    'title' => $item['name'] ?? 'İsimsiz',
+                    'date' => $item['known_for_department'] ?? 'Kişi',
+                    'poster' => isset($item['profile_path']) && $item['profile_path'] ? "https://image.tmdb.org/t/p/w92{$item['profile_path']}" : null,
+                    'type' => 'Kişi',
+                    'url' => "https://www.themoviedb.org/person/{$id}"
+                ];
+            }
+            
+            $isTv = $mediaType === 'tv';
             return [
                 'id' => $id,
                 'title' => $item['title'] ?? $item['name'] ?? 'İsimsiz',
                 'date' => substr($item['release_date'] ?? $item['first_air_date'] ?? '', 0, 4),
-                'poster' => $item['poster_path'] ? "https://image.tmdb.org/t/p/w92{$item['poster_path']}" : null,
+                'poster' => isset($item['poster_path']) && $item['poster_path'] ? "https://image.tmdb.org/t/p/w92{$item['poster_path']}" : null,
                 'type' => $isTv ? 'Dizi' : 'Film',
                 'url' => $isTv ? route('tv.show', $id) : route('movies.show', $id)
             ];

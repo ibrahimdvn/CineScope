@@ -16,7 +16,7 @@
         
         @if(!request()->routeIs('forum.*') && !request()->routeIs('notifications.*') && !request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('password.*') && !request()->routeIs('admin.login') && !request()->routeIs('pages.*'))
         <form action="{{ route('movies.search') }}" method="GET" class="search-form" style="position: relative;" id="smart-search-form">
-            <input type="text" name="query" id="smart-search-input" placeholder="Film veya dizi ara..." class="search-input" value="{{ request('query') }}" autocomplete="off" required>
+            <input type="text" name="query" id="smart-search-input" placeholder="Film, dizi veya kişi ara.." class="search-input" value="{{ request('query') }}" autocomplete="off" required>
             <button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
             
             <div id="smart-search-results" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-top: 0.5rem; box-shadow: var(--shadow-lg); z-index: 1000; overflow: hidden; flex-direction: column;">
