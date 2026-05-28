@@ -12,19 +12,19 @@ class RegisterController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
-    | Register Controller
+    | Kayıt Kontrolcüsü (Register Controller)
     |--------------------------------------------------------------------------
     |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
+    | Bu kontrolcü yeni kullanıcıların kaydolmasını, doğrulanmasını ve
+    | oluşturulmasını yönetir. Varsayılan olarak bu kontrolcü, herhangi bir
+    | ek kod gerektirmeden bu işlevi sağlamak için bir trait kullanır.
     |
     */
 
     use RegistersUsers;
 
     /**
-     * Handle a registration request for the application.
+     * Uygulama için kayıt talebini işler.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
@@ -35,19 +35,19 @@ class RegisterController extends Controller
 
         event(new \Illuminate\Auth\Events\Registered($user = $this->create($request->all())));
 
-        // Instead of logging the user in, redirect to login page
+        // Kullanıcıyı doğrudan kayıttan sonra giriş yaptırmak yerine giriş sayfasına yönlendir
         return redirect()->route('login')->with('success', 'Kayıt işlemi başarılı. Lütfen giriş yapın.');
     }
 
     /**
-     * Where to redirect users after registration.
+     * Kayıttan sonra kullanıcıların yönlendirileceği yer.
      *
      * @var string
      */
     protected $redirectTo = '/';
 
     /**
-     * Create a new controller instance.
+     * Yeni bir kontrolcü örneği oluşturur.
      *
      * @return void
      */
@@ -57,7 +57,7 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Gelen kayıt talebi için bir doğrulayıcı alır.
      *
      * @return \Illuminate\Contracts\Validation\Validator
      */
@@ -71,7 +71,7 @@ class RegisterController extends Controller
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Geçerli bir kayıttan sonra yeni bir kullanıcı örneği oluşturur.
      *
      * @return User
      */

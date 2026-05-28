@@ -13,7 +13,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Toplu atama yapılabilen öznitelikler.
      *
      * @var array<int, string>
      */
@@ -24,7 +24,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Serileştirme için gizlenmesi gereken öznitelikler.
      *
      * @var array<int, string>
      */
@@ -34,7 +34,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Dönüştürülmesi (cast edilmesi) gereken öznitelikler.
      *
      * @var array<string, string>
      */
@@ -46,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Movie::class);
     }
+
+    public function posts()          { return $this->hasMany(Post::class); }
+    public function likes()          { return $this->hasMany(Like::class); }
+    public function comments()       { return $this->hasMany(Comment::class); }
+    public function notifications()  { return $this->hasMany(Notification::class); }
 }

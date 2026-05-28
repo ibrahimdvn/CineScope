@@ -39,18 +39,31 @@ class AdminController extends Controller
 
     public function users()
     {
-        // $users = \App\Models\User::paginate(20);
-        return view('admin.users');
+        $users = \App\Models\User::orderBy('id', 'desc')->paginate(20);
+        return view('admin.users', compact('users'));
     }
 
-    public function movies()
+    public function deleteUser($id)
     {
-        // Film verilerini veritabanından veya API'den alabilirsiniz
-        return view('admin.movies');
+        $user = \App\Models\User::findOrFail($id);
+        
+        // Admin hesabını silmeyi engelle
+        if ($user->role === 'admin' || $user->id === 1) {
+            return back()->with('error', 'Ana yönetici hesabı silinemez!');
+        }
+        
+        $user->delete();
+        return back()->with('success', 'Kullanıcı başarıyla silindi.');
     }
 
     public function settings()
     {
         return view('admin.settings');
+    }
+
+    public function updateSettings(Request $request)
+    {
+        // Sadece demo amaçlı simüle ediliyor
+        return back()->with('success', 'Sistem ayarları başarıyla güncellendi!');
     }
 }

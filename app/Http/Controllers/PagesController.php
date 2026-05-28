@@ -30,4 +30,9 @@ class PagesController extends Controller
     {
         return view('pages.contact');
     }
+
+    public function support()
+    {
+        return view('pages.support');
+    }
 }

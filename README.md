@@ -1,76 +1,83 @@
 # CineScope 🎬
 
-CineScope is a modern, full-featured movie discovery and tracking platform built with Laravel. It offers a premium SaaS-style dark-mode UI, seamlessly integrating with the **TMDB (The Movie Database) API** to deliver real-time data on popular and upcoming films.
+CineScope, Laravel ile geliştirilmiş modern, tam özellikli bir film keşif, takip ve sosyal etkileşim (forum) platformudur. Premium SaaS tarzı koyu tema arayüzü sunar ve en popüler/güncel yapımları çekmek için **TMDB (The Movie Database) API** ile entegre çalışır.
 
-## ✨ Features
+## ✨ Özellikler
 
-- **Real-Time Movie Data:** Fetches dynamically updated lists of popular and now-playing movies directly from TMDB.
-- **SaaS-Grade UI/UX:** A sleek, fully responsive, glassmorphism-inspired dark mode interface engineered with pure CSS.
-- **User Authentication:** Complete registration and login system with automatic routing logic.
-- **Favorites System:** Authenticated users can save and manage their favorite movies in their personal library.
-- **Isolated Admin Panel:** A secure, completely detached administration dashboard (`/admin`) for managing users, movies, and system settings.
-- **Dynamic Search:** Integrated movie search mechanism connecting to the TMDB search endpoints.
+- **Canlı Film ve Dizi Verileri:** Popüler, vizyondakiler ve güncel dizi listelerini doğrudan TMDB'den asenkron çeker.
+- **SaaS Kalitesinde Tasarım (UI/UX):** Saf CSS ile yazılmış, responsive (mobil uyumlu), cam morfolojisi (glassmorphism) esintili şık ve özgün karanlık tema arayüzü.
+- **Sosyal Forum & Akış:** Kullanıcıların gönderi paylaşabildiği, gönderileri beğenebildiği ve yorum yapabildiği gelişmiş sosyal akış paneli.
+  - **Zengin Paylaşım Kutusu:** Gönderilere görsel yükleme önizlemesi, 5 yıldızlı puan verme sistemi, asenkron film/dizi etiketleme desteği ve hızlı emoji seçici.
+- **Favori Sistemi:** Kayıtlı kullanıcıların sevdikleri film ve dizileri profillerinde listelemek üzere favorilerine ekleyebilmesi.
+- **İzole Yönetim (Admin) Paneli:** Kullanıcıları, sistem ayarlarını ve içerikleri yönetmek için tamamen bağımsız ve güvenli bir panel (`/admin`).
+- **Gelişmiş Arama:** TMDB arama API'sini kullanan çok yönlü akıllı arama motoru.
+- **Şifremi Unuttum Altyapısı:** Şifresini unutan kullanıcılar için tasarıma uygun şifre sıfırlama, onaylama ve yeni şifre belirleme akışı.
+- **Bildirim Sistemi:** Kullanıcıların gönderilerine gelen beğeni ve yorumları anlık olarak takip edebileceği entegre bildirim sayfası.
 
-## 🛠 Tech Stack
+## 🛠 Kullanılan Teknolojiler
 
-- **Backend:** Laravel (PHP)
-- **Frontend:** Blade Templating, Vanilla CSS (Flexbox/Grid architecture), FontAwesome 6
-- **Database:** MySQL / SQLite
-- **API:** [TMDB API](https://developer.themoviedb.org/docs)
+- **Arka Uç (Backend):** Laravel 10 (PHP)
+- **Ön Uç (Frontend):** Blade Şablon Motoru, Vanilla CSS (Flexbox/Grid), FontAwesome 6, JavaScript (Vanilla ES6)
+- **Veritabanı:** MySQL / SQLite
+- **API Bağlantısı:** [TMDB API](https://developer.themoviedb.org/docs)
 
-## 🚀 Installation & Setup
+## 🚀 Kurulum ve Çalıştırma
 
-Follow these instructions to get a local copy up and running.
+Lokal bilgisayarınızda projeyi ayağa kaldırmak için aşağıdaki adımları takip edebilirsiniz.
 
-### 1. Prerequisites
+### 1. Gereksinimler
 - PHP >= 8.1
 - Composer
-- A TMDB API Key (Get one for free at [TMDB](https://www.themoviedb.org/settings/api))
+- TMDB API Key ([TMDB](https://www.themoviedb.org/settings/api) adresinden ücretsiz alabilirsiniz)
 
-### 2. Clone the Repository
+### 2. Depoyu Klonlayın
 ```bash
 git clone https://github.com/ibrahimdvn/cinescope.git
 cd cinescope
 ```
 
-### 3. Install Dependencies
+### 3. Bağımlılıkları Yükleyin
 ```bash
 composer install
 ```
 
-### 4. Environment Setup
-Copy the example environment file and configure it:
+### 4. Çevre (.env) Yapılandırması
+Örnek dosyayı kopyalayarak `.env` dosyanızı oluşturun:
 ```bash
 cp .env.example .env
 ```
-Open the `.env` file and add your database credentials. Most importantly, add your TMDB API key at the bottom of the file:
+`.env` dosyasını açıp veritabanı ayarlarınızı girin. Ardından dosyanın en altına TMDB API anahtarınızı ekleyin:
 ```env
-TMDB_API_KEY=your_api_key_here
+TMDB_API_KEY=api_anahtariniz_buraya
 ```
 
-### 5. Generate Application Key & Migrate Database
-Generate the Laravel security key and run the database migrations (this will set up the users and favorites tables):
+Ayrıca şifre sıfırlama maillerini test etmek için e-posta ayarlarını `log` veya SMTP servisinizle güncelleyebilirsiniz:
+```env
+MAIL_MAILER=log
+```
+
+### 5. Uygulama Anahtarını Üretin ve Veritabanını Göç Ettirin
 ```bash
 php artisan key:generate
 php artisan migrate
 ```
 
-### 6. Run the Development Server
+### 6. Geliştirme Sunucusunu Başlatın
 ```bash
 php artisan serve
 ```
-Your application will be live at `http://127.0.0.1:8000`.
+Uygulamanız hazır! `http://127.0.0.1:8000` adresinden tarayıcıda açabilirsiniz.
 
-## 🛡 Admin Panel Access
+## 🛡 Yönetim Paneli Giriş Bilgileri
 
-The application includes a completely separate and secure admin panel. You can access it by navigating to:
+Yönetici paneline erişmek için:
 **URL:** `http://127.0.0.1:8000/admin`
 
-**Default Credentials:**
-- **Username:** `admin`
-- **Password:** `123456`
+**Varsayılan Giriş Bilgileri:**
+- **Kullanıcı Adı:** `admin`
+- **Şifre:** `123456`
 
-## 👨‍💻 Author
+## 👨‍💻 Geliştirici
 
 **İbrahim Can Düven**
 - [LinkedIn](https://www.linkedin.com/in/ibrahim-can-d%C3%BCven-8a7480251/)

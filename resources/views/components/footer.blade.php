@@ -11,6 +11,7 @@
                 <li><a href="{{ route('movies.index') }}">Ana Sayfa</a></li>
                 <li><a href="{{ route('movies.index') }}">Popüler Filmler</a></li>
                 <li><a href="{{ route('movies.now_playing') }}">Vizyondakiler</a></li>
+                <li><a href="{{ route('forum.index') }}">Topluluk (Forum)</a></li>
                 <li><a href="{{ route('pages.about') }}">Hakkımızda</a></li>
             </ul>
         </div>

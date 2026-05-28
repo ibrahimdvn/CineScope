@@ -36,9 +36,14 @@
                 @enderror
             </div>
 
-            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
-                <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                <label for="remember" style="font-size: 0.875rem;">Beni Hatırla</label>
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <label for="remember" style="font-size: 0.875rem;">Beni Hatırla</label>
+                </div>
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" style="font-size: 0.875rem; color: var(--accent-color); text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Şifremi Unuttum</a>
+                @endif
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">
