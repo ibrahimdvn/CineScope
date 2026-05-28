@@ -30,6 +30,17 @@
         .admin-brand i {
             color: var(--danger-color);
         }
+        @media (max-width: 992px) {
+            .admin-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .admin-header {
+                padding: 1rem !important;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>

@@ -136,6 +136,18 @@ p {
     align-items: center;
 }
 
+.nav-brand-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
 .brand {
     font-size: 1.25rem;
     font-weight: 800;
@@ -757,10 +769,11 @@ main {
         padding: 1rem 1.5rem;
     }
 
-    .navbar .container > div:first-child {
+    .nav-brand-container {
         width: 100%;
         justify-content: space-between;
         flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .nav-links {

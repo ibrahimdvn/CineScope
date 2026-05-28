@@ -1,12 +1,12 @@
 <header class="navbar">
     <div class="container">
-        <div style="display: flex; align-items: center; gap: 2rem;">
+        <div class="nav-brand-container">
             <a href="{{ route('movies.index') }}" class="brand">
                 <img src="{{ asset('images/logo.svg') }}" alt="CineScope Logo" style="width: 42px; height: 42px; object-fit: contain; background: transparent;">
                 <div style="line-height: 1; display: flex; align-items: center;">Cine<span>Scope</span></div>
             </a>
             
-            <nav style="display: flex; gap: 1rem; align-items: center;">
+            <nav class="nav-menu">
                 <a href="{{ route('movies.index') }}" class="nav-link {{ request()->routeIs('movies.*') && !request()->routeIs('movies.search') ? 'active' : '' }}">Filmler</a>
                 <a href="{{ route('tv.index') }}" class="nav-link {{ request()->routeIs('tv.*') ? 'active' : '' }}">Diziler</a>
             </nav>
