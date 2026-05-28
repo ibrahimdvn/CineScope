@@ -37,4 +37,12 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
+
+    /**
+     * Kullanıcı giriş yaptığında tetiklenir ve aktivite kaydeder.
+     */
+    protected function authenticated(\Illuminate\Http\Request $request, $user)
+    {
+        \App\Models\ActivityLog::log('login', "{$user->name} ({$user->email}) sisteme giriş yaptı.", $user->id);
+    }
 }

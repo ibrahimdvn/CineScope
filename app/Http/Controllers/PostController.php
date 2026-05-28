@@ -60,7 +60,7 @@ class PostController extends Controller
             $imagePath = $imageName;
         }
 
-        Post::create([
+        $post = Post::create([
             'user_id' => auth()->id(),
             'content' => $request->content,
             'image_path' => $imagePath,
@@ -69,6 +69,9 @@ class PostController extends Controller
             'tagged_movie_title' => $request->tagged_movie_title,
             'tagged_movie_type' => $request->tagged_movie_type,
         ]);
+
+        $user = auth()->user();
+        \App\Models\ActivityLog::log('create_post', "{$user->name} toplulukta yeni bir gönderi paylaştı: \"" . mb_strimwidth($post->content, 0, 80, '...') . "\"", $user->id);
 
         return redirect()->route('forum.index')->with('success', 'Gönderiniz paylaşıldı.');
     }

@@ -40,7 +40,8 @@ class AdminController extends Controller
     public function users()
     {
         $users = \App\Models\User::orderBy('id', 'desc')->paginate(20);
-        return view('admin.users', compact('users'));
+        $logs = \App\Models\ActivityLog::with('user')->orderBy('id', 'desc')->take(50)->get();
+        return view('admin.users', compact('users', 'logs'));
     }
 
     public function deleteUser($id)

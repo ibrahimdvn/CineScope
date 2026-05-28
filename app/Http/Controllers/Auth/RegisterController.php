@@ -33,7 +33,10 @@ class RegisterController extends Controller
     {
         $this->validator($request->all())->validate();
 
-        event(new \Illuminate\Auth\Events\Registered($user = $this->create($request->all())));
+        $user = $this->create($request->all());
+        event(new \Illuminate\Auth\Events\Registered($user));
+
+        \App\Models\ActivityLog::log('register', "{$user->name} ({$user->email}) topluluğa katıldı ve yeni hesap oluşturdu.", $user->id);
 
         // Kullanıcıyı doğrudan kayıttan sonra giriş yaptırmak yerine giriş sayfasına yönlendir
         return redirect()->route('login')->with('success', 'Kayıt işlemi başarılı. Lütfen giriş yapın.');
