@@ -9,8 +9,8 @@
 
     <div class="admin-grid" style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 2rem; align-items: start;">
         <!-- Sol Kısım: Kullanıcı Listesi -->
-        <div style="background-color: var(--bg-surface); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow-x: auto;">
-            <table style="width: 100%; text-align: left; border-collapse: collapse; min-width: 600px;">
+        <div style="background-color: var(--bg-surface); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <table style="width: 100%; text-align: left; border-collapse: collapse;">
                 <thead>
                     <tr style="border-bottom: 1px solid var(--border-color); background-color: rgba(255,255,255,0.02);">
                         <th style="padding: 1rem; font-weight: 600;">ID</th>
@@ -68,13 +68,13 @@
         </div>
 
         <!-- Sağ Kısım: Aktivite Logları -->
-        <div style="background-color: var(--bg-surface); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 700px;">
+        <div style="background-color: var(--bg-surface); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; flex-direction: column;">
             <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 0; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; color: var(--text-primary);">
                 <span><i class="fas fa-history" style="color: var(--accent-color);"></i> Aktivite Günlüğü</span>
                 <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: 600;">Canlı</span>
             </h3>
             
-            <div style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 1rem; padding-right: 0.25rem;">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
                 @forelse($logs as $log)
                     @php
                         $icon = 'info-circle';
