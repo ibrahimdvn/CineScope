@@ -17,7 +17,9 @@
         @yield('content')
     </main>
 
-    @include('components.footer')
+    @if(!request()->routeIs('forum.*') && !request()->routeIs('notifications.*') && !request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('password.*') && !request()->routeIs('admin.*'))
+        @include('components.footer')
+    @endif
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
