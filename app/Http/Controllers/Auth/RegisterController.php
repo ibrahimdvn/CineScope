@@ -152,9 +152,12 @@ class RegisterController extends Controller
                     ->subject("CineScope E-posta Doğrulama Kodu");
             });
 
+            $isLogDriver = config('mail.default') === 'log';
+
             return response()->json([
                 'success' => true,
-                'message' => 'Doğrulama kodu e-posta adresinize gönderildi.'
+                'message' => 'Doğrulama kodu e-posta adresinize gönderildi.',
+                'debug_code' => $isLogDriver ? $code : null
             ]);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Mail sending failed: " . $e->getMessage());

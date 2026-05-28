@@ -124,8 +124,12 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                let msg = data.message;
+                if (data.debug_code) {
+                    msg += ` [TEST MODU] Doğrulama kodunuz: ${data.debug_code}`;
+                }
                 messageSpan.style.color = '#22c55e';
-                messageSpan.textContent = data.message;
+                messageSpan.textContent = msg;
                 verificationGroup.style.display = 'block';
                 verificationInput.focus();
 
