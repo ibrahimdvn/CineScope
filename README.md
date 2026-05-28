@@ -1,6 +1,22 @@
 # CineScope 🎬
 
+<p align="center">
+  <img src="public/images/cinescope_cover.jpg" alt="CineScope Banner" width="100%" style="border-radius: 8px;">
+</p>
+
 CineScope, Laravel ile geliştirilmiş modern, tam özellikli bir film keşif, takip ve sosyal etkileşim (forum) platformudur. Premium SaaS tarzı koyu tema arayüzü sunar ve en popüler/güncel yapımları çekmek için **TMDB (The Movie Database) API** ile entegre çalışır.
+
+## 📸 Ekran Görüntüleri
+
+### Ana Sayfa (Karanlık Premium Arayüz)
+<p align="center">
+  <img src="public/images/screenshot_home.png" alt="CineScope Ana Sayfa" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;">
+</p>
+
+### Akıllı Arama & TMDB Entegrasyonu (Film / Dizi Arama)
+<p align="center">
+  <img src="public/images/screenshot_search.png" alt="CineScope Arama Sonuçları" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;">
+</p>
 
 ## ✨ Özellikler
 
