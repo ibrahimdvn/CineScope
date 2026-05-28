@@ -16,7 +16,7 @@
         
         @if(!request()->routeIs('forum.*') && !request()->routeIs('notifications.*') && !request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('password.*') && !request()->routeIs('admin.login') && !request()->routeIs('pages.*'))
         <form action="{{ route('movies.search') }}" method="GET" class="search-form" style="position: relative;" id="smart-search-form">
-            <input type="text" name="query" id="smart-search-input" placeholder="Film, dizi veya kişi ara.." class="search-input" value="{{ request('query') }}" autocomplete="off" required>
+            <input type="text" name="query" id="smart-search-input" placeholder="Film, dizi veya üye ara..." class="search-input" value="{{ request('query') }}" autocomplete="off" required>
             <button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
             
             <div id="smart-search-results" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-top: 0.5rem; box-shadow: var(--shadow-lg); z-index: 1000; overflow: hidden; flex-direction: column;">
@@ -87,9 +87,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 link.onmouseover = () => link.style.backgroundColor = 'var(--bg-surface-hover)';
                                 link.onmouseout = () => link.style.backgroundColor = 'transparent';
                                 
+                                const isUser = item.type === 'Üye';
+                                const imgStyle = isUser 
+                                    ? 'width: 40px; height: 40px; border-radius: 50%; object-fit: cover;' 
+                                    : 'width: 40px; height: 60px; object-fit: cover; border-radius: 4px;';
+                                const placeholderStyle = isUser 
+                                    ? 'width: 40px; height: 40px; border-radius: 50%; background: var(--bg-base); display: flex; align-items: center; justify-content: center;' 
+                                    : 'width: 40px; height: 60px; background: var(--bg-base); border-radius: 4px; display: flex; align-items: center; justify-content: center;';
+                                const placeholderIcon = isUser ? 'fa-user' : 'fa-image';
+                                
                                 const posterHtml = item.poster 
-                                    ? `<img src="${item.poster}" alt="" style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px;">` 
-                                    : `<div style="width: 40px; height: 60px; background: var(--bg-base); border-radius: 4px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image" style="color: var(--text-muted);"></i></div>`;
+                                    ? `<img src="${item.poster}" alt="" style="${imgStyle}">` 
+                                    : `<div style="${placeholderStyle}"><i class="fas ${placeholderIcon}" style="color: var(--text-muted);"></i></div>`;
                                 
                                 link.innerHTML = `
                                     ${posterHtml}

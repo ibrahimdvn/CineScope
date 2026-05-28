@@ -46,20 +46,40 @@ class MovieController extends Controller
         }
 
         $data = $this->tmdbService->searchMulti($query, $page);
-        $movies = $data['results'] ?? [];
-        
-        // Sadece afişi/profil resmi olan film, dizi ve kişileri filtrele
-        $movies = array_filter($movies, function($item) {
-            $mediaType = $item['media_type'] ?? 'movie';
-            if ($mediaType === 'person') {
-                return !empty($item['profile_path']);
+        $results = $data['results'] ?? [];
+
+        // Eğer TMDB sonuçlarında en az bir adet "person" (kişi) varsa, aramayı bir kişi araması kabul et
+        $isQueryPerson = false;
+        foreach ($results as $item) {
+            if (isset($item['media_type']) && $item['media_type'] === 'person') {
+                $isQueryPerson = true;
+                break;
             }
-            return !empty($item['poster_path']);
-        });
+        }
 
-        $totalPages = $data['total_pages'] ?? 1;
+        if ($isQueryPerson) {
+            // Kişi araması ise TMDB'den film/dizi çekme (boşalt)
+            $movies = [];
+            $totalPages = 1;
+        } else {
+            // Sadece afişi olan film ve dizileri filtrele
+            $movies = array_filter($results, function($item) {
+                $mediaType = $item['media_type'] ?? 'movie';
+                return $mediaType !== 'person' && !empty($item['poster_path']);
+            });
+            $totalPages = $data['total_pages'] ?? 1;
+        }
 
-        return view('movies.search', compact('movies', 'query', 'page', 'totalPages'));
+        // Sitedeki kayıtlı üyeleri ara (Sadece 1. sayfada göster)
+        $users = [];
+        if ($page == 1) {
+            $users = \App\Models\User::where('name', 'like', "%{$query}%")
+                ->orWhere('email', 'like', "%{$query}%")
+                ->limit(12)
+                ->get();
+        }
+
+        return view('movies.search', compact('movies', 'users', 'query', 'page', 'totalPages'));
     }
 
     public function ajaxSearch(Request $request)
@@ -69,40 +89,67 @@ class MovieController extends Controller
             return response()->json([]);
         }
 
+        // 1. TMDB'den Film ve Dizileri ara
         $data = $this->tmdbService->searchMulti($query, 1);
         $results = $data['results'] ?? [];
-        
-        // En fazla 6 sonuç döndür
-        $limited = array_slice($results, 0, 6);
 
-        // Formatla
-        $formatted = array_map(function($item) {
-            $mediaType = $item['media_type'] ?? 'movie';
-            $id = $item['id'];
-            
-            if ($mediaType === 'person') {
+        // Eğer TMDB sonuçlarında en az bir adet "person" varsa, aramayı kişi araması kabul et
+        $isQueryPerson = false;
+        foreach ($results as $item) {
+            if (isset($item['media_type']) && $item['media_type'] === 'person') {
+                $isQueryPerson = true;
+                break;
+            }
+        }
+
+        $formattedTmdb = [];
+        if (!$isQueryPerson) {
+            // Kişi araması değilse, TMDB'den film ve dizileri filtrele
+            $filteredTmdb = array_filter($results, function($item) {
+                $mediaType = $item['media_type'] ?? 'movie';
+                return $mediaType !== 'person';
+            });
+
+            // En fazla 4 adet Film/Dizi sonucunu al
+            $limitedTmdb = array_slice($filteredTmdb, 0, 4);
+
+            // Formatla
+            $formattedTmdb = array_map(function($item) {
+                $mediaType = $item['media_type'] ?? 'movie';
+                $id = $item['id'];
+                $isTv = $mediaType === 'tv';
                 return [
                     'id' => $id,
-                    'title' => $item['name'] ?? 'İsimsiz',
-                    'date' => $item['known_for_department'] ?? 'Kişi',
-                    'poster' => isset($item['profile_path']) && $item['profile_path'] ? "https://image.tmdb.org/t/p/w92{$item['profile_path']}" : null,
-                    'type' => 'Kişi',
-                    'url' => "https://www.themoviedb.org/person/{$id}"
+                    'title' => $item['title'] ?? $item['name'] ?? 'İsimsiz',
+                    'date' => substr($item['release_date'] ?? $item['first_air_date'] ?? '', 0, 4),
+                    'poster' => isset($item['poster_path']) && $item['poster_path'] ? "https://image.tmdb.org/t/p/w92{$item['poster_path']}" : null,
+                    'type' => $isTv ? 'Dizi' : 'Film',
+                    'url' => $isTv ? route('tv.show', $id) : route('movies.show', $id)
                 ];
-            }
-            
-            $isTv = $mediaType === 'tv';
-            return [
-                'id' => $id,
-                'title' => $item['title'] ?? $item['name'] ?? 'İsimsiz',
-                'date' => substr($item['release_date'] ?? $item['first_air_date'] ?? '', 0, 4),
-                'poster' => isset($item['poster_path']) && $item['poster_path'] ? "https://image.tmdb.org/t/p/w92{$item['poster_path']}" : null,
-                'type' => $isTv ? 'Dizi' : 'Film',
-                'url' => $isTv ? route('tv.show', $id) : route('movies.show', $id)
-            ];
-        }, $limited);
+            }, $limitedTmdb);
+        }
 
-        return response()->json(array_values($formatted));
+        // 2. Sitede kayıtlı üyeleri (kullanıcıları) ara
+        $localUsers = \App\Models\User::where('name', 'like', "%{$query}%")
+            ->limit(4)
+            ->get();
+
+        $formattedUsers = [];
+        foreach ($localUsers as $user) {
+            $formattedUsers[] = [
+                'id' => $user->id,
+                'title' => $user->name,
+                'date' => 'CineScope Üyesi',
+                'poster' => $user->avatar ? asset('avatars/' . $user->avatar) : null,
+                'type' => 'Üye',
+                'url' => route('profile.show', $user->id)
+            ];
+        }
+
+        // 3. Sonuçları birleştir
+        $combined = array_merge($formattedTmdb, $formattedUsers);
+
+        return response()->json($combined);
     }
 
     public function show($id)
