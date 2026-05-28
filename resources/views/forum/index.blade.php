@@ -504,18 +504,20 @@ window.addEventListener('DOMContentLoaded', function() {
     </aside>
 
     {{-- ORTA ALAN: GÖNDERİ AKIŞI --}}
-    <main class="cs-feed-col">
+    <main class="cs-feed-col" @guest style="border-right: none;" @endguest>
         <div class="cs-feed-header">
             <img src="{{ asset('images/logo.svg') }}" alt="CineScope Logo" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;">
             <h1>CineScope Topluluk</h1>
         </div>
 
+        @auth
         <div class="cs-feed-tabs">
             <button class="cs-feed-tab active">Tümü</button>
             <button class="cs-feed-tab">Filmler</button>
             <button class="cs-feed-tab">Diziler</button>
             <button class="cs-feed-tab">İncelemeler</button>
         </div>
+        @endauth
 
         @auth
         <div class="cs-compose-box">
@@ -588,18 +590,9 @@ window.addEventListener('DOMContentLoaded', function() {
                 </form>
             </div>
         </div>
-        @else
-        <div style="padding: 2rem 1.5rem; border-bottom: 1px solid var(--border-color); text-align: center;">
-            <div class="cs-empty-icon" style="margin: 0 auto 1rem;"><i class="fas fa-film"></i></div>
-            <h3 style="margin-bottom: 0.5rem; font-size: 1rem; font-weight: 700;">CineScope Topluluğuna Katıl</h3>
-            <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.25rem;">Film yorumlarını paylaş, diğer sinema severlerle tartış.</p>
-            <div style="display: flex; gap: 0.75rem; justify-content: center;">
-                <a href="{{ route('login') }}" class="cs-post-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;"><i class="fas fa-sign-in-alt"></i> Giriş Yap</a>
-                <a href="{{ route('register') }}" class="cs-follow-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; padding: 0.5rem 1rem;">Kayıt Ol</a>
-            </div>
-        </div>
         @endauth
 
+        @auth
         {{-- GÖNDERİLER --}}
         @forelse($posts as $post)
         <div class="cs-post">
@@ -695,9 +688,21 @@ window.addEventListener('DOMContentLoaded', function() {
             <p>Sinema dünyasını konuşturan ilk kişi sen ol.</p>
         </div>
         @endforelse
+        @else
+        <div style="padding: 5rem 1.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 250px);">
+            <div class="cs-empty-icon" style="margin: 0 auto 1.5rem; width: 80px; height: 80px; font-size: 2.5rem; background: rgba(0, 112, 243, 0.1); color: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-film"></i></div>
+            <h2 style="margin-bottom: 0.75rem; font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">CineScope Topluluğuna Katıl</h2>
+            <p style="color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 2rem; max-width: 420px; line-height: 1.6;">Film yorumlarını paylaş, diğer sinema severlerle tartış.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+                <a href="{{ route('login') }}" class="cs-post-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem; padding: 0.75rem 2rem; font-size: 1rem; border-radius: 8px;"><i class="fas fa-sign-in-alt"></i> Giriş Yap</a>
+                <a href="{{ route('register') }}" class="cs-follow-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem; padding: 0.75rem 2rem; font-size: 1rem; border-radius: 8px;">Kayıt Ol</a>
+            </div>
+        </div>
+        @endauth
     </main>
 
     {{-- RIGHT SIDEBAR --}}
+    @auth
     <aside class="cs-sidebar-right">
         <div class="cs-search-box">
             <i class="fas fa-search"></i>
@@ -764,6 +769,7 @@ window.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
     </aside>
+    @endauth
 
 </div>
 
