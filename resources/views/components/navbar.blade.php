@@ -18,7 +18,6 @@
             <button type="submit" class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
             
             <div id="smart-search-results" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-top: 0.5rem; box-shadow: var(--shadow-lg); z-index: 1000; overflow: hidden; flex-direction: column;">
-                <!-- Results will be injected here via JS -->
             </div>
         </form>
         @endif
