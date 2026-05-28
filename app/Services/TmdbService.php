@@ -12,7 +12,7 @@ class TmdbService
     public function __construct()
     {
         $this->baseUrl = 'https://api.themoviedb.org/3';
-        $this->apiKey = env('TMDB_API_KEY');
+        $this->apiKey = config('services.tmdb.key');
     }
 
     public function getPopularMovies($page = 1)
