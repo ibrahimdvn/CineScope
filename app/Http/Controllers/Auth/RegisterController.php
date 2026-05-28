@@ -68,8 +68,16 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'email.email' => 'Lütfen geçerli ve aktif bir e-posta adresi girin.',
+            'email.unique' => 'Bu e-posta adresi zaten kullanımda.',
+            'email.required' => 'E-posta alanı zorunludur.',
+            'name.required' => 'Ad Soyad alanı zorunludur.',
+            'password.required' => 'Şifre alanı zorunludur.',
+            'password.min' => 'Şifre en az 8 karakter olmalıdır.',
+            'password.confirmed' => 'Şifre tekrarları eşleşmiyor.',
         ]);
     }
 
